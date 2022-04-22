@@ -26,8 +26,9 @@ public class MyOrderedList<Type extends Comparable<Type>> {
     public Type remove(Type item){
         for (int i = 0; i<size(); i++){
             if(item.compareTo(list.get(i)) == 0){
+                Type temp = list.get(i);
                 list.remove(i);
-                return item;
+                return temp;
             }
         }
         return null;

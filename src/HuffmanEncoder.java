@@ -27,10 +27,9 @@ public class HuffmanEncoder {
         for (int i = 0; i < book.book.length(); i++) {
             FrequencyNode ch = new FrequencyNode();
             ch.character = book.book.charAt(i);
-
+            ch.count = 1;
             if(frequencies.binarySearch(ch) != null){
-                ch.count = frequencies.binarySearch(ch).count + 1;
-                frequencies.remove(ch);
+                ch.count += frequencies.remove(ch).count;
                 frequencies.add(ch);
 
             } else{
@@ -56,6 +55,15 @@ public class HuffmanEncoder {
     //Extract the codes from the tree and store them in codes using the recursive helper function like this:
         //extractCodes(huffmanTree,"");
     //It should output the time it takes to build the tree and extract the codes.
+        MyPriorityQueue<HuffManNode> tree = new MyPriorityQueue<>();
+        for (int i = 0; i < frequencies.size(); i++) {
+            HuffManNode node = new HuffManNode(frequencies.get(i).character, frequencies.get(i).count);
+            tree.insert(node);
+        }
+        for (int i = 0; i < tree.size(); i++) {
+            tree.
+
+        }
 
     }
     private void extractCode(HuffManNode root, String code){
