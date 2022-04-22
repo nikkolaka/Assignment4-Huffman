@@ -49,7 +49,7 @@ public class MyOrderedList<Type extends Comparable<Type>> {
 
             if(list.get(mid).compareTo(item) == 0){
 
-                return item;
+                return list.get(mid);
             }
 
             if(list.get(mid).compareTo(item) > 0){

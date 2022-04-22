@@ -15,6 +15,8 @@ public class HuffmanEncoder {
     public HuffmanEncoder() throws IOException {
     //The constructor should call the helper methods in the correct order to carry out Huffman’s algorithm
     countFrequency();
+    buildTree();
+    encode();
     }
     private void countFrequency(){
     //This method counts the frequency of each character in the book and stores it in frequencies.
@@ -39,11 +41,7 @@ public class HuffmanEncoder {
 
         long now = System.currentTimeMillis();
         duration = now - start;
-        System.out.println("It took "+duration+" ms");
-        System.out.println(frequencies);
-
-
-
+        System.out.println("It took "+duration+" ms to count frequency");
     }
     private void buildTree(){
     //This method builds the Huffman tree and extracts the codes from it, storing them in codes.
@@ -55,15 +53,25 @@ public class HuffmanEncoder {
     //Extract the codes from the tree and store them in codes using the recursive helper function like this:
         //extractCodes(huffmanTree,"");
     //It should output the time it takes to build the tree and extract the codes.
+        long duration = 0;
+        long start = System.currentTimeMillis();
         MyPriorityQueue<HuffManNode> tree = new MyPriorityQueue<>();
         for (int i = 0; i < frequencies.size(); i++) {
             HuffManNode node = new HuffManNode(frequencies.get(i).character, frequencies.get(i).count);
             tree.insert(node);
         }
-        for (int i = 0; i < tree.size(); i++) {
-            tree.
-
+        while(tree.size()>1) {
+            HuffManNode node = new HuffManNode(tree.removeMin(), tree.removeMin());
+            tree.insert(node);
         }
+        huffmanTree = tree.removeMin();
+
+        extractCode(huffmanTree,"");
+        long now = System.currentTimeMillis();
+        duration = now - start;
+        System.out.println("Built Huffman tree in "+duration+" ms");
+        System.out.println();
+
 
     }
     private void extractCode(HuffManNode root, String code){
@@ -71,6 +79,23 @@ public class HuffmanEncoder {
     //This method will conduct a recursive depth-first traversal of the Huffman tree.
     //The path of left and right moves is stored in the code parameter by adding “0” for left traversals and “1” for right traversals.
     //When a leaf is reached the code is stored in the codes list.
+
+        if(!(root.left == null && root.right == null)){
+            code += "0";
+            extractCode(root.left, code);
+            code = code.substring(0, code.length() - 1);
+            code += "1";
+            extractCode(root.right, code);
+            code = code.substring(0, code.length() - 1);
+        }
+        if(root.character != null){
+            CodeNode node = new CodeNode();
+            node.character = root.character;
+            node.code = code;
+            codes.add(node);
+        }
+
+
 
     }
     private void encode(){
@@ -80,12 +105,48 @@ public class HuffmanEncoder {
     //You can convert a string of ‘0’s and ‘1’s to a byte with this line:
         //byte b = (byte)Integer.parseInt(str,2);
     //It should output the time it takes to encode the text.
+        long duration = 0;
+        long start = System.currentTimeMillis();
+        StringBuilder str = new StringBuilder();
+        for (int i = 0; i < book.book.length(); i++) {
+
+            CodeNode temp = new CodeNode();
+            temp.character = book.book.charAt(i);
+            str.append(codes.binarySearch(temp).code);
+        }
+        encodedText = new byte[(int) Math.ceil(((double) str.length())/8)];
+        String string = "";
+        int counter = 0;
+        for (int i = 0; i < str.length(); i++) {
+
+            string += str.charAt(i);
+            if(string.length() == 8){
+                byte b = (byte)Integer.parseInt(string,2);
+                encodedText[counter] = b;
+                string = "";
+                counter++;
+
+            }
+        }
+
+        StringBuilder leftovers = new StringBuilder(string);
+        while(leftovers.length() <= 8){
+            leftovers.insert(0, 0);
+        }
+        byte b = (byte)Integer.parseInt(String.valueOf(leftovers),2);
+        encodedText[counter] = b;
+
+        long now = System.currentTimeMillis();
+        duration = now - start;
+        System.out.println("Encoded message in "+duration+" ms with "+encodedText.length+" bytes");
+
 
 
     }
     private void writeFiles(){
     //Writes the contents of encodedText to the outputFileName and the contents of codes to codesFileName.
     //It should output the time it takes to write the files.
+
     }
 
     class FrequencyNode implements Comparable<FrequencyNode>{
@@ -113,6 +174,7 @@ public class HuffmanEncoder {
             this.weight = wt;
         }
         public HuffManNode(HuffManNode left, HuffManNode right){
+            this.weight = left.weight+ right.weight;
             this.left = left;
             this.right = right;
         }
