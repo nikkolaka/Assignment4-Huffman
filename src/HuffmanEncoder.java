@@ -1,3 +1,5 @@
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 
 public class HuffmanEncoder {
@@ -17,6 +19,7 @@ public class HuffmanEncoder {
     countFrequency();
     buildTree();
     encode();
+    writeFiles();
     }
     private void countFrequency(){
     //This method counts the frequency of each character in the book and stores it in frequencies.
@@ -41,7 +44,8 @@ public class HuffmanEncoder {
 
         long now = System.currentTimeMillis();
         duration = now - start;
-        System.out.println("It took "+duration+" ms to count frequency");
+        System.out.println("It took "+duration+" ms to count frequency of "+frequencies.size()+" characters");
+        System.out.println();
     }
     private void buildTree(){
     //This method builds the Huffman tree and extracts the codes from it, storing them in codes.
@@ -138,14 +142,28 @@ public class HuffmanEncoder {
 
         long now = System.currentTimeMillis();
         duration = now - start;
-        System.out.println("Encoded message in "+duration+" ms with "+encodedText.length+" bytes");
+        System.out.println("Encoded message in "+duration+" ms");
+        System.out.println();
 
 
 
     }
-    private void writeFiles(){
+    private void writeFiles() throws IOException {
     //Writes the contents of encodedText to the outputFileName and the contents of codes to codesFileName.
     //It should output the time it takes to write the files.
+        long duration = 0;
+        long start = System.currentTimeMillis();
+        try (FileOutputStream fos = new FileOutputStream(outputFileName)) {
+            fos.write(encodedText);
+        }
+        try (FileWriter writer = new FileWriter(codesFileName)) {
+            for (int i = 0; i < codes.size(); i++) {
+                writer.write(codes.get(i).toString()+"\n");
+            }
+        }
+        long now = System.currentTimeMillis();
+        duration = now - start;
+        System.out.println("Encoded message written to file with "+encodedText.length+" bytes in "+duration+" ms");
 
     }
 
